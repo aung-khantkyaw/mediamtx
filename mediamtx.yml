@@ -823,12 +823,23 @@ pathDefaults:
 paths:
   # example:
   my_camera:
-    source: rtsp://192.168.100.47:8554
+    source: rtsp://192.168.1.100:8554
     sourceOnDemand: no
     record: yes
     recordPath: /recordings/%path/%Y-%m-%d_%H-%M-%S-%f
     recordFormat: fmp4
     # recordPartDuration: 1s
+    recordSegmentDuration: 1m
+    recordDeleteAfter: 30d
+    overridePublisher: yes
+
+  testing_camera:
+    source: rtsp://192.168.1.100:8554
+    sourceOnDemand: no
+    record: yes
+    recordPath: /recordings/%path/%Y-%m-%d_%H-%M-%S-%f
+    recordFormat: fmp4
+    recordPartDuration: 1s
     recordSegmentDuration: 1m
     recordDeleteAfter: 30d
     overridePublisher: yes

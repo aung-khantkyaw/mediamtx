@@ -198,6 +198,22 @@ func (a *API) onRecordingsList(ctx *gin.Context) {
 	}
 	data.PageCount = pageCount
 
+	if ctx.Query("sessions") == "true" {
+		items := make([]gin.H, len(pathNames))
+
+		for i, pathName := range pathNames {
+			pathConf, _, _ := conf.FindPathConf(c.Paths, pathName)
+			items[i] = recordingsSessionsOfPath(pathConf, pathName, nil, nil)
+		}
+
+		ctx.JSON(http.StatusOK, gin.H{
+			"itemCount": data.ItemCount,
+			"pageCount": data.PageCount,
+			"items":     items,
+		})
+		return
+	}
+
 	data.Items = make([]defs.APIRecording, len(pathNames))
 
 	for i, pathName := range pathNames {
@@ -229,32 +245,32 @@ func (a *API) onRecordingsGet(ctx *gin.Context) {
 	var endPtr *time.Time
 
 	if v := ctx.Query("start"); v != "" {
-			t, err := time.Parse(time.RFC3339Nano, v)
-			if err != nil {
-					a.writeError(
-							ctx,
-							http.StatusBadRequest,
-							fmt.Errorf("invalid start parameter: %w", err),
-					)
-					return
-			}
-			startPtr = &t
+		t, err := time.Parse(time.RFC3339Nano, v)
+		if err != nil {
+			a.writeError(
+				ctx,
+				http.StatusBadRequest,
+				fmt.Errorf("invalid start parameter: %w", err),
+			)
+			return
+		}
+		startPtr = &t
 	}
 
 	if v := ctx.Query("end"); v != "" {
-			t, err := time.Parse(time.RFC3339Nano, v)
-			if err != nil {
-					a.writeError(
-							ctx,
-							http.StatusBadRequest,
-							fmt.Errorf("invalid end parameter: %w", err),
-					)
-					return
-			}
-			endPtr = &t
+		t, err := time.Parse(time.RFC3339Nano, v)
+		if err != nil {
+			a.writeError(
+				ctx,
+				http.StatusBadRequest,
+				fmt.Errorf("invalid end parameter: %w", err),
+			)
+			return
+		}
+		endPtr = &t
 	} else {
-			now := time.Now()
-			endPtr = &now
+		now := time.Now()
+		endPtr = &now
 	}
 
 	if ctx.Query("sessions") == "true" {
